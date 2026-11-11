@@ -1,34 +1,42 @@
 
+
 import joblib
 
-# Load the trained model and vectorizer
-model = joblib.load("spam_model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+# Load trained model
+model = joblib.load("models/spam_classifier.pkl")
 
-print("\n================================")
-print("       SMS SPAM DETECTOR")
-print("================================")
-print("Enter an SMS message to check.")
-print("Type 'exit' to close the program.")
+print("=" * 50)
+print("       SMS SPAM DETECTION SYSTEM")
+print("=" * 50)
 
 while True:
-    message = input("\nEnter SMS: ")
+
+    message = input("\nEnter an SMS message (or type 'exit' to quit): ")
 
     if message.lower() == "exit":
-        print("Thank you for using SMS Spam Detector!")
+        print("\nThank you for using SMS Spam Detection!")
         break
 
     if not message.strip():
         print("Please enter a valid message.")
         continue
 
-    # Convert message into numerical features
-    message_tfidf = vectorizer.transform([message])
-
     # Predict message category
-    prediction = model.predict(message_tfidf)[0]
+    prediction = model.predict([message])[0]
 
-    if prediction == 1:
-        print("\nResult: SPAM MESSAGE!")
+    # Display result
+    print("\nPrediction Result:")
+
+    if prediction == "spam":
+        print("WARNING! This message is SPAM.")
     else:
-        print("\nResult: NOT SPAM (HAM)")
+        print("This message is HAM (Not Spam).")
+
+    # Display prediction confidence
+    probabilities = model.predict_proba([message])[0]
+    confidence = max(probabilities) * 100
+
+    print("Confidence:", round(confidence, 2), "%")
+
+    print("-" * 50)
+
